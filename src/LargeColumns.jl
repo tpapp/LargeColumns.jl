@@ -89,6 +89,16 @@ function layout_path(dir)
 end
 
 """
+    ensure_meta_directory(dir)
+
+If the `meta` directory does not exist, it is created.
+"""
+function ensure_meta_directory(dir)
+    meta = joinpath(dir, "meta")
+    isdir(meta) || mkpath(meta)
+end
+
+"""
     write_layout(dir, N::Integer, S)
 
 Write the layout information into the layout file in the directory `dir`.
@@ -105,8 +115,7 @@ When the `dir` and `dir/meta` do not exist, they are created.
     this way; the actual value is not relevant.
 """
 function write_layout(dir, N::Integer, S::Type{<:Tuple})
-    meta = joinpath(dir, "meta")
-    isdir(meta) || mkpath(meta)
+    ensure_meta_directory(dir)
     jld = jldopen(layout_path(dir), "w")
     write(jld, LAYOUT_MAGIC, MAGIC)
     write(jld, LAYOUT_N, N)
@@ -127,6 +136,7 @@ function read_layout(dir)
     N = read(jld, LAYOUT_N)
     SVAL = read(jld, LAYOUT_SVAL)
     close(jld)
+    ensure_meta_directory(dir)
     N, typeof(SVAL)
 end
 
