@@ -26,9 +26,8 @@ julia> fixed_Tuple_types(Tuple{Int64,Float64})
 ```
 """
 function fixed_Tuple_types(T::Type{<: Tuple})
-    p = tuple(T.parameters...)
-    @argcheck !(p[end] <: Vararg) "Not a tuple of fixed length."
-    p
+    @argcheck !Base.isvatuple(T)
+    tuple(T.parameters...)
 end
 
 # FIXME use Base.write when functionality similar to
