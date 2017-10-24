@@ -50,6 +50,8 @@ end
     for i in 11:15
         push!(sink, (i, Float64(i)))
     end
+    @test length(sink) == 15
+    @test eltype(sink) == Tuple{Int, Float64}
     close(sink)
 
     # mmap

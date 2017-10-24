@@ -125,30 +125,28 @@ setindex!(A::MmappedColumns{T,S}, X::S, i) where {T,S} =
 
 sync!(A::MmappedColumns) = foreach(sync!, A.columns)
 
-function _mmap_column(dir::AbstractString, col_index::Integer, T::Type, N::Integer;
-                     readonly = false, create = false, shared = false)
+function _mmap_column(dir::AbstractString, col_index::Integer, T::Type, N::Integer, mode;
+                      shared = false)
     @argcheck isbits(T) "Type $T is not a bits type."
     checkdir(dir)
-    io = open(binary_filename(dir, col_index),
-              true, !readonly, create, create, false)
+    println("opening $(binary_filename(dir, col_index)), $mode")
+    io = open(binary_filename(dir, col_index), mode)
     Mmap.mmap(io, Vector{T}, (N,); shared = shared)
 end
 
-function MmappedColumns(dir::AbstractString; readonly = false, shared = false)
+function MmappedColumns(dir::AbstractString; shared = false)
     N, S = read_layout(dir)
     T = fixed_Tuple_types(S)
-    columns = ntuple(i -> _mmap_column(dir, i, T[i], N;
-                                       readonly = readonly, shared = shared),
+    columns = ntuple(i -> _mmap_column(dir, i, T[i], N, "r+"; shared = shared),
                      length(T))
     MmappedColumns(columns)
 end
 
-function MmappedColumns(dir::AbstractString, N, S::Type{<:Tuple};
-                        shared = shared)
+function MmappedColumns(dir::AbstractString, N, S::Type{<:Tuple}; shared = false)
     T = fixed_Tuple_types(S)
-    columns = ntuple(i -> _mmap_column(dir, i, T[i], N;
-                                       create = true, shared = shared),
-                  enumerate(fixed_Tuple_types(S)))
+    columns = ntuple(i -> _mmap_column(dir, i, T[i], N, "w+"; shared = shared),
+                     length(T))
+    write_layout(dir, N, S)
     MmappedColumns(columns)
 end
 
@@ -189,7 +187,7 @@ Open sink columns with an existing layout in `dir`. When `append`, append to the
 existing data (which is not checked for consistent length, it is assumed that it
 was closed/flushed properly).
 """
-function SinkColumns(dir::AbstractString, append::Bool = false)
+function SinkColumns(dir::AbstractString, append::Bool)
     N, S = read_layout(dir)
     if append
         for (i, T) in enumerate(fixed_Tuple_types(S))
