@@ -3,7 +3,9 @@ module LargeColumns
 using ArgCheck
 using JLD
 
-import Base: length, size, getindex, setindex!, push!, close, eltype, flush
+import Base:
+    length, size, getindex, setindex!,  eltype, # mmapped vectors
+    push!, close, flush                         # written streams
 
 import Base.Mmap: sync!
 
