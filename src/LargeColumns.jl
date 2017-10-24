@@ -111,6 +111,12 @@ function write_layout(dir, N::Integer, S::Type{<:Tuple})
     nothing
 end
 
+"""
+    N, S = read_layout(dir)
+
+Return data layout from directory. If not found, or cannot be read, throw an
+error.
+"""
 function read_layout(dir)
     jld = jldopen(layout_path(dir), "r")
     @assert read(jld, LAYOUT_MAGIC) == MAGIC
@@ -120,9 +126,21 @@ function read_layout(dir)
     N, typeof(SVAL)
 end
 
+"""
+    binary_filename(dir, i)
+
+Filename for the binary data of column `i` in directory `dir`.
+"""
 binary_filename(dir, i::Int) = joinpath(dir, "$(i).bin")
 
+"""
+    check_filesize(dir, N, i, T)
+
+Check that the size of file for column `i` in directory `dir` is consistent with
+length `N` and type `T`.
+"""
 function check_filesize(dir, N, i, T)
+    @argcheck isbits(T)
     fn = binary_filename(dir, i)
     size_T = sizeof(T)
     size_expected = size_T * N
