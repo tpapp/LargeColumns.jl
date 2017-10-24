@@ -128,7 +128,6 @@ sync!(A::MmappedColumns) = foreach(sync!, A.columns)
 function _mmap_column(dir::AbstractString, col_index::Integer, T::Type, N::Integer, mode)
     @argcheck isbits(T) "Type $T is not a bits type."
     checkdir(dir)
-    println("opening $(binary_filename(dir, col_index)), $mode")
     io = open(binary_filename(dir, col_index), mode)
     Mmap.mmap(io, Vector{T}, N)
 end
