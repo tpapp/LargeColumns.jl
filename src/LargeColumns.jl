@@ -102,7 +102,7 @@ Write the layout information into the layout file in the directory `dir`.
     checks implemented in JLD should ensure that changed definitions are caught
     this way; the actual value is not relevant.
 """
-function write_layout(dir, N::Integer, S)
+function write_layout(dir, N::Integer, S::Type{<:Tuple})
     jld = jldopen(layout_path(dir), "w")
     write(jld, LAYOUT_MAGIC, MAGIC)
     write(jld, LAYOUT_N, N)
