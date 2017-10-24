@@ -73,6 +73,7 @@ end
     # reopen and sort
     cols = MmappedColumns(dir)
     sort!(cols.columns[1])
+    Mmap.sync!(cols)
     # reopen and test
     cols = MmappedColumns(dir)
     @test cols == [(i,) for i in 1:N]
