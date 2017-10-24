@@ -15,9 +15,9 @@ For each dataset, the columns (vectors of equal length) and metadata
 are stored in a directory like this:
 
 ```
-dir
+dir/
 ├── layout.jld
-├── meta
+├── meta/
 │   └ ...
 ├── 1.bin
 ├── 2.bin
