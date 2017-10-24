@@ -125,26 +125,25 @@ setindex!(A::MmappedColumns{T,S}, X::S, i) where {T,S} =
 
 sync!(A::MmappedColumns) = foreach(sync!, A.columns)
 
-function _mmap_column(dir::AbstractString, col_index::Integer, T::Type, N::Integer, mode;
-                      shared = false)
+function _mmap_column(dir::AbstractString, col_index::Integer, T::Type, N::Integer, mode)
     @argcheck isbits(T) "Type $T is not a bits type."
     checkdir(dir)
     println("opening $(binary_filename(dir, col_index)), $mode")
     io = open(binary_filename(dir, col_index), mode)
-    Mmap.mmap(io, Vector{T}, (N,); shared = shared)
+    Mmap.mmap(io, Vector{T}, N)
 end
 
-function MmappedColumns(dir::AbstractString; shared = false)
+function MmappedColumns(dir::AbstractString)
     N, S = read_layout(dir)
     T = fixed_Tuple_types(S)
-    columns = ntuple(i -> _mmap_column(dir, i, T[i], N, "r+"; shared = shared),
+    columns = ntuple(i -> _mmap_column(dir, i, T[i], N, "r+"),
                      length(T))
     MmappedColumns(columns)
 end
 
-function MmappedColumns(dir::AbstractString, N, S::Type{<:Tuple}; shared = false)
+function MmappedColumns(dir::AbstractString, N, S::Type{<:Tuple})
     T = fixed_Tuple_types(S)
-    columns = ntuple(i -> _mmap_column(dir, i, T[i], N, "w+"; shared = shared),
+    columns = ntuple(i -> _mmap_column(dir, i, T[i], N, "w+"),
                      length(T))
     write_layout(dir, N, S)
     MmappedColumns(columns)

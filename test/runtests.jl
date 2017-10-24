@@ -61,3 +61,19 @@ end
     @test cols[3] ≡ (3, 3.0)
     @test cols == [(i, Float64(i)) for i in 1:15]
 end
+
+@testset "mmap standalone, opened multiple times" begin
+    dir = mktempdir()
+    N = 39
+    # create
+    cols = MmappedColumns(dir, N, Tuple{Int}) # create
+    col = cols.columns[1]
+    col .= randperm(N)          # random permutation
+    Mmap.sync!(cols)
+    # reopen and sort
+    cols = MmappedColumns(dir)
+    sort!(cols.columns[1])
+    # reopen and test
+    cols = MmappedColumns(dir)
+    @test cols == [(i,) for i in 1:N]
+end
