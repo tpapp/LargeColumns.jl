@@ -219,6 +219,18 @@ function _mmap_column(dir::AbstractString, col_index::Integer, T::Type, N::Integ
     Mmap.mmap(io, Vector{T}, N)
 end
 
+"""
+    MmappedColumns(dir, [N, S])
+
+Open mmapped columns in `dir`, returning a wrapper object for them that can be
+accessed as a vector of eltype `S`.
+
+When `N` and `S` are provided, they are used for the number of items (length)
+and the type (eg `Tuple{Int, Float64}`), and layout information is *created or
+overwritten*.
+
+When they are not provided, `dir` is supposed to contain layout information.
+"""
 function MmappedColumns(dir::AbstractString)
     N, S = read_layout(dir)
     T = fixed_Tuple_types(S)
@@ -260,7 +272,14 @@ end
 """
     SinkColumns(dir, S)
 
-Open sinks for columns with the given type `S` in `dir`.
+Open sinks for columns with the given type `S` in `dir`. 
+
+Supported interface:
+
+- `push!`: add a record
+- `length`: number of records written
+- `eltype`: return `S`
+- `close`, `flush`: do what they are supposed to.
 """
 SinkColumns(dir::AbstractString, S::Type{<: Tuple}) =
     SinkColumns(dir, S, _sink_streams(dir, S, "w"))
