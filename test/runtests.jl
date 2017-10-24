@@ -3,7 +3,7 @@ using Base.Test
 
 import LargeColumns:
     # internals
-    fixed_Tuple_types, representative_value, write_layout, read_layout, meta_path
+    fixed_Tuple_types, representative_value, write_layout, read_layout
 
 @testset "utilities" begin
     @test fixed_Tuple_types(Tuple{Int, Int}) ≡ (Int, Int)
@@ -26,9 +26,8 @@ end
 end
 
 @testset "meta path" begin
-    @test meta_path("/tmp/", "test") == "/tmp/test"
-    @test_throws ArgumentError meta_path("/tmp/", LargeColumns.LAYOUT_FILE)
-    @test_throws ArgumentError meta_path("/tmp/", "99.bin")
+    @test meta_path("/tmp/", "test") == "/tmp/meta/test"
+    @test_throws ArgumentError meta_path("/tmp/", "../foo")
 end
 
 @testset "write values, get back as mmapped" begin

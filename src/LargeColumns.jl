@@ -9,7 +9,7 @@ import Base:
 
 import Base.Mmap: sync!
 
-export MmappedColumns, SinkColumns
+export MmappedColumns, SinkColumns, meta_path
 
 ######################################################################
 # utilities
@@ -152,11 +152,17 @@ end
 # meta information
 ######################################################################
 
+"""
+    meta_path(dir, [filename = "meta.jld"])
+
+Return a path for a metadata filename in `dir`. Arbitrary filenames are allowed,
+as long as they are valid base file names.
+"""
 function meta_path(dir, filename = "meta.jld")
     checkdir(dir)
-    @argcheck filename != LAYOUT_FILE "Conflict with the layout file."
-    @argcheck !ismatch(r"\d+\.bin", filename) "Conflict with binary column file."
-    joinpath(dir, filename)
+    @argcheck(basename(filename) == filename,
+              "Filename $filename is not a base file name.")
+    joinpath(dir, "meta", filename)
 end
 
 ######################################################################
