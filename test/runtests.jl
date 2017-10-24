@@ -58,7 +58,8 @@ end
     cols = MmappedColumns(dir)
     @test eltype(cols) == Tuple{Int, Float64}
     @test length(cols) == 15
-    @test cols[3] ≡ (3, 3.0)
+    @test cols[3] ≡ (3, 3.0)                                        # getindex Int
+    @test cols[(end-2):end] == [(13, 13.0), (14, 14.0), (15, 15.0)] # getindex to_indices
     @test cols == [(i, Float64(i)) for i in 1:15]
 end
 
@@ -84,12 +85,15 @@ end
     N = 10
     # setindex! — fill with values
     cols = MmappedColumns(dir, N, Tuple{Int, Char})
-    for i in 1:10
+    for i in 1:N
         cols[i] = i, Char(i + 'a')
     end
     Mmap.sync!(cols)
     # getindex — reopen and check
-    for i in 1:10
+    for i in 1:N
         @test cols[i] ≡ (i, Char(i + 'a'))
     end
+    A = [(N+i, Char(i + 'a')) for i in 2:7]
+    cols[3:8] = A
+    @test cols[3:8] == A
 end

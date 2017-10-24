@@ -205,10 +205,22 @@ length(A::MmappedColumns) = length(first(A.columns))
 
 size(A::MmappedColumns) = (length(A),)
 
-getindex(A::MmappedColumns, i) = map(c -> getindex(c, i), A.columns)
+getindex(A::MmappedColumns, i::Int) = map(c -> getindex(c, i), A.columns)
 
-setindex!(A::MmappedColumns{T,S}, X::S, i) where {T,S} =
+getindex(A::MmappedColumns, I) = map(i -> getindex(A, i), to_indices(A, (I,))...)
+
+setindex!(A::MmappedColumns{T,S}, X::S, i::Int) where {T,S} =
     map((c, x) -> setindex!(c, x, i), A.columns, X)
+
+setindex!(A::MmappedColumns{T,S}, X, i::Int) where {T,S} =
+    setindex!(A, convert(S, X), i)
+
+function setindex!(A::MmappedColumns{T,S}, X, I) where {T,S}
+    for (i, x) in zip(to_indices(A, (I,))[1], X)
+        A[i] = x
+    end
+    X
+end
 
 sync!(A::MmappedColumns) = foreach(sync!, A.columns)
 
