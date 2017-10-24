@@ -45,10 +45,17 @@ end
     flush(sink)     # NOTE calling both `flush` and `close` is not a strong test
     close(sink)
 
+    # append
+    sink = SinkColumns(dir, true)
+    for i in 11:15
+        push!(sink, (i, Float64(i)))
+    end
+    close(sink)
+
     # mmap
     cols = MmappedColumns(dir)
     @test eltype(cols) == Tuple{Int, Float64}
-    @test length(cols) == 10
+    @test length(cols) == 15
     @test cols[3] ≡ (3, 3.0)
-    @test cols == [(i, Float64(i)) for i in 1:10]
+    @test cols == [(i, Float64(i)) for i in 1:15]
 end
