@@ -78,3 +78,18 @@ end
     cols = MmappedColumns(dir)
     @test cols == [(i,) for i in 1:N]
 end
+
+@testset "mmap getindex and setindex" begin
+    dir = mktempdir()
+    N = 10
+    # setindex! — fill with values
+    cols = MmappedColumns(dir, N, Tuple{Int, Char})
+    for i in 1:10
+        cols[i] = i, Char(i + 'a')
+    end
+    Mmap.sync!(cols)
+    # getindex — reopen and check
+    for i in 1:10
+        @test cols[i] ≡ (i, Char(i + 'a'))
+    end
+end
