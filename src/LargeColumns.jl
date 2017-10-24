@@ -170,7 +170,8 @@ mutable struct SinkColumns{S <: Tuple, R <: Tuple, D <: AbstractString}
 end
 
 function _sink_streams(dir, S, mode)
-    ntuple(i -> open(binary_filename(dir, i), "w"), length(fixed_Tuple_types(S)))
+    ntuple(i -> open(binary_filename(dir, i), mode),
+           length(fixed_Tuple_types(S)))
 end
 
 """
