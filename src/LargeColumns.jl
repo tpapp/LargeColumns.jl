@@ -19,6 +19,11 @@ export MmappedColumns, SinkColumns
    fixed_Tuple_types(T)
 
 Extract the parameters of a Tuple and verify that they have a fixed length.
+
+```jldocstest
+julia> fixed_Tuple_types(Tuple{Int64,Float64})
+(Int64, Float64)
+```
 """
 function fixed_Tuple_types(T::Type{<: Tuple})
     p = tuple(T.parameters...)
@@ -37,24 +42,67 @@ end
 # layout information
 ######################################################################
 
+"""
+    representative_value(T)
+
+Return (an otherwise unspecified) value of type `T`.
+
+See [`write_layout`](@ref) for why this is needed.
+"""
 function representative_value(::Type{T}) where T
     @argcheck isbits(T)
     Vector{T}(1)[1]
 end
 
+"Name of the layout file."
 const LAYOUT_FILE = "layout.jld"
+
+"Key for the number of records."
 const LAYOUT_N = "N"
+
+"Key for representative values."
 const LAYOUT_SVAL = "S"
+
+"Key for the 'magic' constant."
 const LAYOUT_MAGIC = "magic"
+
+"A string that is checked for version consistency."
 const MAGIC = b"LargeCol-0.1"
 
+"""
+    checkdir(dir)
+
+Check that `dir` exists and is a directory.
+
+!!! NOTE
+    Currently a placeholder. Future checks may be more picky (empty directory etc).
+"""
 checkdir(dir) = @argcheck isdir(dir) "Directory $dir does not exist."
 
+"""
+    layout_path(dir)
+
+Return the path for the layout file, also checking `dir`.
+"""
 function layout_path(dir)
     checkdir(dir)
     joinpath(dir, LAYOUT_FILE)
 end
 
+"""
+    write_layout(dir, N::Integer, S)
+
+Write the layout information into the layout file in the directory `dir`.
+
+`N` is the number of records, `S` is the type information (eg
+`Tuple{Int,Float64`).
+
+!!! NOTE
+
+    Type information is written as a value that is of type `S`. The sanity
+    checks implemented in JLD should ensure that changed definitions are caught
+    this way; the actual value is not relevant.
+"""
 function write_layout(dir, N::Integer, S)
     jld = jldopen(layout_path(dir), "w")
     write(jld, LAYOUT_MAGIC, MAGIC)
