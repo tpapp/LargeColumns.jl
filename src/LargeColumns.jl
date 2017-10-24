@@ -67,16 +67,17 @@ function read_layout(dir)
     @assert read(jld, LAYOUT_MAGIC) == MAGIC
     N = read(jld, LAYOUT_N)
     SVAL = read(jld, LAYOUT_SVAL)
+    close(jld)
     N, typeof(SVAL)
 end
 
 binary_filename(dir, i::Int) = joinpath(dir, "$(i).bin")
 
-function check_filesize(dir, i, T)
+function check_filesize(dir, N, i, T)
     fn = binary_filename(dir, i)
     size_T = sizeof(T)
     size_expected = size_T * N
-    @assert(filesize() == size_expected,
+    @assert(filesize(fn) == size_expected,
             "Inconsistent file size for $fn (should be $N × $(size_T) == $size_expected)")
 end
 
