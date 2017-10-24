@@ -193,7 +193,7 @@ function SinkColumns(dir::AbstractString, append::Bool = false)
     N, S = read_layout(dir)
     if append
         for (i, T) in enumerate(fixed_Tuple_types(S))
-            check_filesize(dir, i, T)
+            check_filesize(dir, N, i, T)
         end
     end
     SinkColumns(dir, S,_sink_streams(dir, S, append ? "a" : "w"),
