@@ -96,6 +96,8 @@ Write the layout information into the layout file in the directory `dir`.
 `N` is the number of records, `S` is the type information (eg
 `Tuple{Int,Float64`).
 
+When the `dir` and `dir/meta` do not exist, they are created.
+
 !!! NOTE
 
     Type information is written as a value that is of type `S`. The sanity
@@ -103,6 +105,8 @@ Write the layout information into the layout file in the directory `dir`.
     this way; the actual value is not relevant.
 """
 function write_layout(dir, N::Integer, S::Type{<:Tuple})
+    meta = joinpath(dir, "meta")
+    isdir(meta) || mkpath(meta)
     jld = jldopen(layout_path(dir), "w")
     write(jld, LAYOUT_MAGIC, MAGIC)
     write(jld, LAYOUT_N, N)

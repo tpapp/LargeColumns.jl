@@ -22,6 +22,7 @@ end
     N = rand(1:10_000)
     S = Tuple{Date,Int}
     write_layout(dir, N, S)
+    @test (touch(meta_path(dir)); true) # test that meta was created
     @test read_layout(dir) ≡ (N, S)
 end
 

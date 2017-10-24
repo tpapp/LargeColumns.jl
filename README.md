@@ -17,6 +17,8 @@ are stored in a directory like this:
 ```
 dir
 ├── layout.jld
+├── meta
+│   └ ...
 ├── 1.bin
 ├── 2.bin
 ├── ...
@@ -29,8 +31,9 @@ The file `layout.jld` specifies the number and types of columns (using
 elements. The `$i.bin` files contain the data for each column, which
 can be [memory mapped](https://en.wikipedia.org/wiki/Memory-mapped_file).
 
-Additional metadata can be saved as in files which do not clash with
-these filenames. See `meta_path`.
+Additional metadata can be saved as in files in the directory
+`meta`. This is ignored by this library, but `meta_path` is provided
+for convenience.
 
 ## Interfaces
 
