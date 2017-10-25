@@ -1,7 +1,7 @@
 module LargeColumns
 
 using ArgCheck
-using JLD
+using JLD2
 
 import Base:
     length, size, getindex, setindex!,  eltype, # mmapped vectors
