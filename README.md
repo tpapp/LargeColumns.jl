@@ -46,3 +46,8 @@ fixed.
 
 Types for the columns are specified as `Tuple`s. See the docstrings
 for both interfaces and the unit tests for examples.
+
+# Acknowledgments
+
+Work on this library was supported by the Austrian National Bank
+Jubiläumsfonds grant #17378.
