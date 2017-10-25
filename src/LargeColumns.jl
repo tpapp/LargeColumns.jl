@@ -34,7 +34,7 @@ end
 # https://github.com/JuliaLang/julia/pull/24234/ is merged
 function bits_write(io::IO, x::T) where T
     @argcheck isbits(T)
-    unsafe_write(io, Ref(x), sizeof(T))
+    write(io, [x])
 end
 
 ######################################################################
