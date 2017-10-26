@@ -294,7 +294,7 @@ Arguments:
 - `N`: the number of elements already written. Useful when adding to existing
   sinks.
 """
-mutable struct SinkColumns{S <: Tuple, R <: Tuple{Vararg{IO}}, D <: AbstractString}
+mutable struct SinkColumns{S <: Tuple, D <: AbstractString, R <: Tuple{Vararg{IO}}}
     "The directory for the columns and the layout."
     dir::D
     "IO streams for writing data."
@@ -306,7 +306,7 @@ mutable struct SinkColumns{S <: Tuple, R <: Tuple{Vararg{IO}}, D <: AbstractStri
         for T in fixed_Tuple_types(S)
             @argcheck isbits(T) "Type $(T) is not a bits type."
         end
-        new{S, R, D}(dir, sinks, N)
+        new{S, D, R}(dir, sinks, N)
     end
 end
 
