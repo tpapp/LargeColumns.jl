@@ -198,9 +198,11 @@ end
 
 const VectorTuple = Tuple{Vararg{Vector}}
 
-struct MmappedColumns{S <: Tuple, T <: VectorTuple} <: AbstractVector{S}
+struct MmappedColumns{S <: Tuple, D, T <: VectorTuple} <: AbstractVector{S}
+    dir::D
     columns::T
-    function MmappedColumns(columns::T) where {T <: VectorTuple}
+    function MmappedColumns(dir::D, columns::T) where {D <: AbstractString,
+                                                       T <: VectorTuple}
         @argcheck !isempty(columns) "Need at least one column."
         N = length(first(columns))
         for v in Base.tail(columns)
@@ -210,7 +212,7 @@ struct MmappedColumns{S <: Tuple, T <: VectorTuple} <: AbstractVector{S}
             @argcheck isbits(eltype(c)) "All columns need to be bits types."
         end
         S = Tuple{map(eltype, columns)...}
-        new{S, T}(columns)
+        new{S, D, T}(dir, columns)
     end
 end
 
@@ -261,7 +263,7 @@ function MmappedColumns(dir::AbstractString)
     T = fixed_Tuple_types(S)
     columns = ntuple(i -> _mmap_column(dir, i, T[i], N, "r+"),
                      length(T))
-    MmappedColumns(columns)
+    MmappedColumns(dir, columns)
 end
 
 function MmappedColumns(dir::AbstractString, N, S::Type{<:Tuple})
@@ -269,8 +271,10 @@ function MmappedColumns(dir::AbstractString, N, S::Type{<:Tuple})
     columns = ntuple(i -> _mmap_column(dir, i, T[i], N, "w+"),
                      length(T))
     write_layout(dir, N, S)
-    MmappedColumns(columns)
+    MmappedColumns(dir, columns)
 end
+
+meta_path(A::MmappedColumns, relpath) = meta_path(A.dir, relpath)
 
 ######################################################################
 # sinks - writing an *ex ante* unknown number of elements
@@ -380,5 +384,7 @@ function close(A::SinkColumns)
 end
 
 eltype(A::SinkColumns{S}) where S = S
+
+meta_path(A::SinkColumns, relpath) = meta_path(A.dir, relpath)
 
 end # module

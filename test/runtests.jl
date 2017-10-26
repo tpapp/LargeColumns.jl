@@ -57,6 +57,9 @@ end
     flush(sink)     # NOTE calling both `flush` and `close` is not a strong test
     close(sink)
 
+    # test meta path
+    @test meta_path(sink, "foo") == meta_path(dir, "foo")
+
     # append
     sink = SinkColumns(dir, true)
     for i in 11:15
@@ -90,6 +93,8 @@ end
     # reopen and test
     cols = MmappedColumns(dir)
     @test cols == [(i,) for i in 1:N]
+    # test meta path
+    @test meta_path(cols, "foo") == meta_path(dir, "foo")
 end
 
 @testset "mmap getindex and setindex" begin
