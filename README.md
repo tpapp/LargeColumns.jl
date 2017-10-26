@@ -32,8 +32,8 @@ elements. The `$i.bin` files contain the data for each column, which
 can be [memory mapped](https://en.wikipedia.org/wiki/Memory-mapped_file).
 
 Additional metadata can be saved as in files in the directory
-`meta`. This is ignored by this library, but `meta_path` is provided
-for convenience.
+`meta`. This is ignored by this library; use the function `meta_path`
+to calculate paths relative to `dir/meta`.
 
 ## Interfaces
 
