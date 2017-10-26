@@ -276,9 +276,30 @@ end
 # sinks - writing an *ex ante* unknown number of elements
 ######################################################################
 
-mutable struct SinkColumns{S <: Tuple, R <: Tuple, D <: AbstractString}
+"""
+    SinkColumns(dir, S, sinks, [N = 0])
+
+Inner constructor for SinkColumns. *Most users should use the outer
+constructors.*
+
+Arguments:
+
+- `dir`: the directory for the data and the layout specification
+
+- `S`: a Tuple type of fixed length, eg `Tuple{Int, Float64}`, that specifies
+  the element type of each column (and implicitly the number of columns).
+
+- `sink`: streams for writing binary data.
+
+- `N`: the number of elements already written. Useful when adding to existing
+  sinks.
+"""
+mutable struct SinkColumns{S <: Tuple, R <: Tuple{Vararg{IO}}, D <: AbstractString}
+    "The directory for the columns and the layout."
     dir::D
+    "IO streams for writing data."
     sinks::R
+    "The number of elements already in the files."
     N::Int
     function SinkColumns(dir::D, S::Type{<: NTuple{Z, Any}}, sinks::R,
                          N::Int = 0) where {D, R <: NTuple{Z, IO}} where Z
@@ -289,6 +310,11 @@ mutable struct SinkColumns{S <: Tuple, R <: Tuple, D <: AbstractString}
     end
 end
 
+"""
+    _sink_streams(dir, S, mode)
+
+Create streams for binary sinks in `dir`, opened with `mode`.
+"""
 function _sink_streams(dir, S, mode)
     ntuple(i -> open(binary_filename(dir, i), mode),
            length(fixed_Tuple_types(S)))
@@ -299,7 +325,13 @@ end
 
 Open sinks for columns with the given type `S` in `dir`. 
 
-Supported interface:
+## Example:
+
+```julia
+sink = SinkColumns("/tmp/test", Tuple{Int,Float64})
+```
+
+## Supported interface
 
 - `push!`: add a record
 - `length`: number of records written
