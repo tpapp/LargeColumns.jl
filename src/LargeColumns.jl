@@ -167,16 +167,29 @@ end
 ######################################################################
 
 """
-    meta_path(dir, [filename = "meta.jld"])
+    ensure_proper_subpath(dir, subpath)
 
-Return a path for a metadata filename in `dir`. Arbitrary filenames are allowed,
-as long as they are valid base file names.
+Return the normalized `dir/subpath`, ensuring that it is inside `dir`, otherwise
+raising an error. *None of the paths are required to exist, the function
+operates on paths, not the filesystem.*
 """
-function meta_path(dir, filename = "meta.jld")
+function ensure_proper_subpath(dir, subpath)
+    norm_dir = normpath(dir)
+    norm_subpath = normpath(joinpath(norm_dir, subpath))
+    @argcheck startswith(norm_subpath, norm_dir) "$(subpath) not in $(dir)."
+    norm_subpath
+end
+
+"""
+    meta_path(dir, relpath)
+
+Resolve `relpath` relative to `dir`, for saving and loading metadata.
+
+Resulting paths are checked to be inside `dir`.
+"""
+function meta_path(dir, relpath)
     checkdir(dir)
-    @argcheck(basename(filename) == filename,
-              "Filename $filename is not a base file name.")
-    joinpath(dir, "meta", filename)
+    ensure_proper_subpath(joinpath(dir, "meta"), relpath)
 end
 
 ######################################################################

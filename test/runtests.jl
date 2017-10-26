@@ -3,7 +3,8 @@ using Base.Test
 
 import LargeColumns:
     # internals
-    fixed_Tuple_types, representative_value, write_layout, read_layout
+    fixed_Tuple_types, representative_value, write_layout, read_layout,
+    ensure_proper_subpath
 
 @testset "utilities" begin
     @test fixed_Tuple_types(Tuple{Int, Int}) ≡ (Int, Int)
@@ -17,12 +18,23 @@ import LargeColumns:
     @test_throws ArgumentError representative_value(Vector{Int})
 end
 
+@testset "meta subpath calculation" begin
+    @test ensure_proper_subpath("/tmp", "foo") == "/tmp/foo"
+    @test ensure_proper_subpath("/tmp/dir/", "foo") == "/tmp/dir/foo"
+    @test_throws ArgumentError ensure_proper_subpath("/tmp/dir/", "../foo")
+    @test ensure_proper_subpath("/tmp/", "dir/../foo") == "/tmp/foo"
+    @test_throws ArgumentError ensure_proper_subpath("/tmp/", "dir/../../foo")
+    @test_throws ArgumentError ensure_proper_subpath("/tmp", "/root")
+end
+
 @testset "layout information" begin
     dir = mktempdir()
     N = rand(1:10_000)
     S = Tuple{Date,Int}
     write_layout(dir, N, S)
-    @test (touch(meta_path(dir)); true) # test that meta was created
+    @test meta_path(dir, ".") == joinpath(dir, "meta/")
+    @test meta_path(dir, "foo.jld2") == joinpath(dir, "meta/foo.jld2")
+    @test isdir(meta_path(dir, ".")) # test that meta was created
     @test read_layout(dir) ≡ (N, S)
 end
 
