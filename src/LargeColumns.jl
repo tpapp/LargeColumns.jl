@@ -198,7 +198,7 @@ end
 
 const VectorTuple = Tuple{Vararg{Vector}}
 
-struct MmappedColumns{T <: VectorTuple, S <: Tuple} <: AbstractVector{S}
+struct MmappedColumns{S <: Tuple, T <: VectorTuple} <: AbstractVector{S}
     columns::T
     function MmappedColumns(columns::T) where {T <: VectorTuple}
         @argcheck !isempty(columns) "Need at least one column."
@@ -210,7 +210,7 @@ struct MmappedColumns{T <: VectorTuple, S <: Tuple} <: AbstractVector{S}
             @argcheck isbits(eltype(c)) "All columns need to be bits types."
         end
         S = Tuple{map(eltype, columns)...}
-        new{T, S}(columns)
+        new{S, T}(columns)
     end
 end
 
@@ -222,13 +222,13 @@ getindex(A::MmappedColumns, i::Int) = map(c -> getindex(c, i), A.columns)
 
 getindex(A::MmappedColumns, I) = map(i -> getindex(A, i), to_indices(A, (I,))...)
 
-setindex!(A::MmappedColumns{T,S}, X::S, i::Int) where {T,S} =
+setindex!(A::MmappedColumns{S}, X::S, i::Int) where S =
     map((c, x) -> setindex!(c, x, i), A.columns, X)
 
-setindex!(A::MmappedColumns{T,S}, X, i::Int) where {T,S} =
+setindex!(A::MmappedColumns{S}, X, i::Int) where S =
     setindex!(A, convert(S, X), i)
 
-function setindex!(A::MmappedColumns{T,S}, X, I) where {T,S}
+function setindex!(A::MmappedColumns{S}, X, I) where S
     for (i, x) in zip(to_indices(A, (I,))[1], X)
         A[i] = x
     end
