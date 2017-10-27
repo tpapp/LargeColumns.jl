@@ -3,8 +3,8 @@ using Base.Test
 
 import LargeColumns:
     # internals
-    fixed_Tuple_types, representative_value, write_layout, read_layout,
-    ensure_proper_subpath
+    fixed_Tuple_types, representative_value, ensure_proper_subpath,
+    write_layout, read_layout
 
 @testset "utilities" begin
     @test fixed_Tuple_types(Tuple{Int, Int}) ≡ (Int, Int)
@@ -113,4 +113,20 @@ end
     A = [(N+i, Char(i + 'a')) for i in 2:7]
     cols[3:8] = A
     @test cols[3:8] == A
+end
+
+@testset "path creation tests" begin
+    dir = tempname()
+    @test !isdir(dir)           # verify that it does not exist
+    cols = MmappedColumns(dir, 10, Tuple{Float64, Date})
+    # test that directories are created
+    @test isdir(dir)
+    @test isdir(joinpath(dir, "meta"))
+    # test layout and data files
+    @test isfile(joinpath(dir, "layout.jld2"))
+    @test isfile(joinpath(dir, "1.bin"))
+    @test isfile(joinpath(dir, "2.bin"))
+    # test that no other files are created
+    @test sort(readdir(dir)) == ["1.bin", "2.bin", "layout.jld2", "meta"]
+    @test readdir(joinpath(dir, "meta")) == String[]
 end

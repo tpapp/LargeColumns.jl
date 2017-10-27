@@ -54,7 +54,7 @@ function representative_value(::Type{T}) where T
 end
 
 "Name of the layout file."
-const LAYOUT_FILE = "layout.jld"
+const LAYOUT_FILE = "layout.jld2"
 
 "Key for the number of records."
 const LAYOUT_N = "N"
@@ -267,10 +267,10 @@ function MmappedColumns(dir::AbstractString)
 end
 
 function MmappedColumns(dir::AbstractString, N, S::Type{<:Tuple})
+    write_layout(dir, N, S)
     T = fixed_Tuple_types(S)
     columns = ntuple(i -> _mmap_column(dir, i, T[i], N, "w+"),
                      length(T))
-    write_layout(dir, N, S)
     MmappedColumns(dir, columns)
 end
 
