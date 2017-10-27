@@ -16,7 +16,7 @@ are stored in a directory like this:
 
 ```
 dir/
-├── layout.jld
+├── layout.jld2
 ├── meta/
 │   └ ...
 ├── 1.bin
@@ -26,8 +26,8 @@ dir/
 └── ...
 ```
 
-The file `layout.jld` specifies the number and types of columns (using
-[JLD.jl](https://github.com/JuliaIO/JLD.jl), and the total number of
+The file `layout.jld2` specifies the number and types of columns (using
+[JLD2.jl](https://github.com/simonster/JLD2.jl), and the total number of
 elements. The `$i.bin` files contain the data for each column, which
 can be [memory mapped](https://en.wikipedia.org/wiki/Memory-mapped_file).
 
