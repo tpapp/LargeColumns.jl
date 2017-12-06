@@ -1,3 +1,4 @@
+__precompile__()
 module LargeColumns
 
 using ArgCheck
@@ -327,7 +328,7 @@ end
 """
     SinkColumns(dir, S)
 
-Open sinks for columns with the given type `S` in `dir`. 
+Open sinks for columns with the given type `S` in `dir`.
 
 ## Example:
 
