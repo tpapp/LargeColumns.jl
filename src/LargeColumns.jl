@@ -1,8 +1,10 @@
 __precompile__()
 module LargeColumns
 
-using ArgCheck
-using JLD2
+using ArgCheck: @argcheck
+using DocStringExtensions: SIGNATURES
+using JLD2: jldopen
+using Parameters: @unpack
 
 import Base:
     length, size, getindex, setindex!,  eltype, # mmapped vectors
@@ -276,6 +278,27 @@ function MmappedColumns(dir::AbstractString, N, S::Type{<:Tuple})
 end
 
 meta_path(A::MmappedColumns, relpath) = meta_path(A.dir, relpath)
+
+"""
+    $SIGNATURES
+
+Return a subset of columns as a `MappedColumns`.
+
+Can't be used to select a single column, see `get_columns`.
+"""
+function get_column_subset(A::MmappedColumns, column_indexes)
+    @unpack dir, columns = A
+    indexes = Base.to_index(columns, column_indexes)
+    @argcheck !(indexes isa Int)
+    MmappedColumns(dir, columns[indexes])
+end
+
+"""
+    $SIGNATURES
+
+Return columns directly, as a tuple or a single column.
+"""
+get_columns(A::MmappedColumns, column_indexes) =  A.columns[column_indexes]
 
 ######################################################################
 # sinks - writing an *ex ante* unknown number of elements

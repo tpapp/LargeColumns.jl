@@ -4,7 +4,7 @@ using Base.Test
 import LargeColumns:
     # internals
     fixed_Tuple_types, representative_value, ensure_proper_subpath,
-    write_layout, read_layout
+    write_layout, read_layout, get_column_subset, get_columns
 
 @testset "utilities" begin
     @test fixed_Tuple_types(Tuple{Int, Int}) ≡ (Int, Int)
@@ -129,4 +129,26 @@ end
     # test that no other files are created
     @test sort(readdir(dir)) == ["1.bin", "2.bin", "layout.jld2", "meta"]
     @test readdir(joinpath(dir, "meta")) == String[]
+end
+
+@testset "mmapped column accessors" begin
+    dir = mktempdir()
+    N = 10
+    cols = MmappedColumns(dir, N, Tuple{Int, Float64, Float32})
+    for i in 1:N
+        cols[i] = i, Float64(i), Float32(i)
+    end
+    Mmap.sync!(cols)
+    # subset
+    c12 = get_column_subset(cols, 1:2)
+    @test eltype(c12) ≡ Tuple{Int, Float64}
+    for i in 1:N
+        c12[i] ≡ (i, Float64(i))
+    end
+    # invalid subset
+    @test_throws ArgumentError get_column_subset(cols, 1)
+    # golumns
+    cc = get_columns(cols, 2:3)
+    @test eltype.(cc) == (Float64, Float32)
+    @test cc == (Float64.(1:N), Float32.(1:N))
 end

@@ -1,3 +1,5 @@
 julia 0.6
 ArgCheck
+DocStringExtensions
 JLD2
+Parameters
