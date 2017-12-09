@@ -14,9 +14,8 @@ import Base.Mmap: sync!
 
 export MmappedColumns, SinkColumns, meta_path
 
-######################################################################
+
 # utilities
-######################################################################
 
 """
    fixed_Tuple_types(T)
@@ -40,9 +39,8 @@ function bits_write(io::IO, x::T) where T
     write(io, [x])
 end
 
-######################################################################
+
 # layout information
-######################################################################
 
 """
     representative_value(T)
@@ -165,9 +163,8 @@ function check_filesize(dir, N, i, T)
             "Inconsistent file size for $fn (should be $N × $(size_T) == $size_expected)")
 end
 
-######################################################################
+
 # meta information
-######################################################################
 
 """
     ensure_proper_subpath(dir, subpath)
@@ -195,9 +192,8 @@ function meta_path(dir, relpath)
     ensure_proper_subpath(joinpath(dir, "meta"), relpath)
 end
 
-######################################################################
+
 # mmapped columns
-######################################################################
 
 const VectorTuple = Tuple{Vararg{Vector}}
 
@@ -300,9 +296,8 @@ Return columns directly, as a tuple or a single column.
 """
 get_columns(A::MmappedColumns, column_indexes) =  A.columns[column_indexes]
 
-######################################################################
+
 # sinks - writing an *ex ante* unknown number of elements
-######################################################################
 
 """
     SinkColumns(dir, S, sinks, [N = 0])
