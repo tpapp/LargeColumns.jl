@@ -148,8 +148,9 @@ end
     end
     # invalid subset
     @test_throws ArgumentError get_column_subset(cols, 1)
-    # golumns
-    cc = get_columns(cols, 2:3)
+    # columns
+    cc = get_columns(cols)[2:3]
     @test eltype.(cc) == (Float64, Float32)
     @test cc == (Float64.(1:N), Float32.(1:N))
+    @test cols.columns == get_columns(cols)
 end

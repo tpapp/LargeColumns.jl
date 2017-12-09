@@ -290,9 +290,10 @@ end
 """
     $SIGNATURES
 
-Return columns directly, as a tuple or a single column.
+Return columns directly as a tuple. Note that these are still the original,
+mmapped columns, writing to them will affect the data on disk. See `sync!`.
 """
-get_columns(A::MmappedColumns, column_indexes) =  A.columns[column_indexes]
+get_columns(A::MmappedColumns) = A.columns
 
 
 # sinks - writing an *ex ante* unknown number of elements
