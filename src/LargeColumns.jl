@@ -12,8 +12,6 @@ import Base:
 
 import Base.Mmap: sync!
 
-export MmappedColumns, SinkColumns, meta_path
-
 
 # utilities
 

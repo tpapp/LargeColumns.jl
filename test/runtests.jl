@@ -1,7 +1,8 @@
 using LargeColumns
 using Base.Test
 
-import LargeColumns:
+using LargeColumns:
+    MmappedColumns, SinkColumns, meta_path,
     # internals
     fixed_Tuple_types, representative_value, ensure_proper_subpath,
     write_layout, read_layout, get_column_subset, get_columns
